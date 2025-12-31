@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jack is always best</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: #00ff00; 
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4); 
+        }
+
+        #countdown-screen, #main-content, #smile-screen, #gift-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .glass-container {
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.85); 
+            border: 2px solid #00ff00;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            backdrop-filter: blur(12px);
+            max-width: 85%;
+        }
+
+        /* Gift Box Animation */
+        .gift-box {
+            font-size: 100px;
+            cursor: pointer;
+            transition: transform 0.5s;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .big-year {
+            font-size: 85px;
+            margin: 0;
+            color: #00ff00;
+            text-shadow: 2px 2px #ff0000, -2px -2px #0000ff;
+            animation: glitch 1s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        #timer {
+            font-size: 45px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ff00;
+            margin: 20px 0;
+        }
+
+        .wa-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 22px;
+            color: #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .wa-link:hover {
+            background: #00ff00;
+            color: black;
+            box-shadow: 0 0 30px #00ff00;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix"></canvas>
+
+    <div class="content-layer">
+        <div id="countdown-screen" class="glass-container">
+            <h1 style="font-size: 24px;">Hang tight jack  2026 is coming:</h1>
+            <div id="timer"></div>
+            <p>Target: Jan  1  2026 00:00:00</p>
+        </div>
+
+        <div id="gift-container">
+            <div class="gift-box" onclick="openGift()">🎁</div>
+            <h2 style="color: gold;">A Gift for You! Tap to Open</h2>
+        </div>
+
+        <div id="main-content">
+            <div class="glass-container">
+                <h1 class="big-year">2026</h1>
+                <h2 style="font-size: 18px;">Walking into 2026 with the most precious people in my life.</h2>
+                <p>Happy New Year to everyone </p>
+                <br>
+                <p>Don't tap on my Name </p>
+                <a class="wa-link" href="https://wa.me/916302965804?text=Happy New Year Jack! 🎊">
+                    jack___Q <sub>x</sub> 😊
+                </a>
+            </div>
+        </div>
+
+        <div id="smile-screen" class="glass-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="35" cy="40" r="6" fill="#00ff00" />
+                <circle cx="65" cy="40" r="6" fill="#00ff00" />
+                <path d="M 30 65 Q 50 85 70 65" stroke="#00ff00" stroke-width="6" fill="none" />
+            </svg>
+            <h2>Time's Up!</h2>
+            <p>Hope you had a great start to 2026!</p>
+        </div>
+    </div>
+
+    <script>
+        // --- Matrix Animation with Mouse/Touch Interaction ---
+        const canvas = document.getElementById("matrix");
+        const ctx = canvas.getContext("2d");
+        let mouseX = -1000, mouseY = -1000; // Screen off-set initially
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789HALLELUJAH".split("");
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+
+                // Color change when near mouse/touch
+                const dist = Math.hypot(x - mouseX, y - mouseY);
+                ctx.fillStyle = dist < 120 ? "#ffffff" : "#00ff00";
+
+                ctx.fillText(text, x, y);
+                if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 35);
+
+        // Interaction Listeners
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        window.addEventListener('touchstart', (e) => {
+            mouseX = e.touches[0].clientX;
+            mouseY = e.touches[0].clientY;
+        });
+
+        // --- Logic Control ---
+        function openGift() {
+            document.getElementById('gift-container').style.display = "none";
+            document.getElementById('main-content').style.display = "flex";
+            launchFireworks();
+            setInterval(launchFireworks, 3000);
+        }
+
+        function launchFireworks() {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#00ff00', '#ffffff', '#ffd700']
+            });
+        }
+
+        function update() {
+            const targetDate = "2026-01-01T00:00:00"; 
+            const openTime = new Date(targetDate).getTime();
+            const expiryTime = new Date("2026-01-01T23:59:59").getTime();
+            const now = new Date().getTime();
+
+            const s1 = document.getElementById('countdown-screen');
+            const sGift = document.getElementById('gift-container');
+            const sMain = document.getElementById('main-content');
+            const sEnd = document.getElementById('smile-screen');
+
+            if (now < openTime) {
+                const diff = openTime - now;
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                document.getElementById('timer').innerHTML = `${d}d ${h}h ${m}m ${s}s`;
+                s1.style.display = "flex";
+            } else if (now <= expiryTime) {
+                s1.style.display = "none";
+                if (sMain.style.display !== "flex") {
+                    sGift.style.display = "flex";
+                }
+            } else {
+                sMain.style.display = "none";
+                sGift.style.display = "none";
+                sEnd.style.display = "flex";
+            }
+        }
+
+        setInterval(update, 1000);
+        update();
+
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
+
