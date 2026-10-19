@@ -1,256 +1,753 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="te">
 <head>
     <meta charset="UTF-8">
-    <title>jack is always best</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Naruboyina</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            background: black;
-            color: #00ff00; 
-            font-family: 'Courier New', Courier, monospace;
-            text-align: center;
-            overflow: hidden;
-            cursor: pointer;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
-        #matrix {
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: #060913;
+        }
+
+        /* Print & PDF Save Prevention */
+        @media print {
+            body {
+                display: none !important;
+            }
+        }
+
+        /* Security Blur / Screenshot Protection Overlay */
+        #securityOverlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        .content-layer {
-            position: relative;
-            z-index: 1;
+            width: 100vw;
             height: 100vh;
-            display: flex;
+            background: #000000;
+            z-index: 99999;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(0, 0, 0, 0.4); 
+            color: #ff3838;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(16px, 4vw, 22px);
+            text-align: center;
+            padding: 20px;
+            font-weight: bold;
         }
 
-        #countdown-screen, #main-content, #smile-screen, #gift-container {
+        /* Watermark hidden as requested */
+        .watermark-container {
             display: none;
+        }
+
+        body {
+            background: linear-gradient(rgba(10, 15, 30, 0.4), rgba(10, 15, 30, 0.5)), 
+                        url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1200&auto=format&fit=crop');
+            background-size: cover;
+            background-repeat: repeat;
+            background-attachment: fixed;
+            background-position: 0% 0%;
+            animation: moveSky 50s linear infinite;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
-        .glass-container {
-            padding: 40px;
-            background: rgba(0, 0, 0, 0.85); 
-            border: 2px solid #00ff00;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-            backdrop-filter: blur(12px);
-            max-width: 85%;
+        @keyframes moveSky {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
         }
 
-        /* Gift Box Animation */
-        .gift-box {
-            font-size: 100px;
+        .clock-container {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1000;
+        }
+
+        .live-clock {
+            font-size: clamp(12px, 3vw, 14px);
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 191, 243, 0.5);
+            box-shadow: 0 0 10px rgba(0, 191, 243, 0.4);
+            color: #00bff3;
+            text-align: center;
+        }
+
+        .expiry-time {
+            font-size: clamp(10px, 2.5vw, 11px);
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(255, 56, 56, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 56, 56, 0.5);
+            color: #ff3838;
+            text-align: center;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: clamp(20px, 5vw, 30px) 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.8);
+            text-align: center;
+            width: 100%;
+            max-width: 320px;
+            z-index: 1000;
+            color: #ffffff;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            font-size: clamp(18px, 4vw, 20px);
+        }
+
+        .input-group {
+            position: relative; 
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        input[type="password"], input[type="text"] {
+            width: 100%; 
+            padding: 12px 45px 12px 12px; 
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border-radius: 8px; 
+            font-size: clamp(14px, 3.5vw, 15px);
+            outline: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        input:focus {
+            border-color: #00bff3;
+        }
+
+        .toggle-eye {
+            position: absolute; 
+            right: 12px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            cursor: pointer; 
+            font-size: 16px; 
+            user-select: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #00bff3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: clamp(15px, 4vw, 16px);
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.5s;
-            animation: bounce 1s infinite;
+            margin-top: 15px;
+            transition: background 0.3s;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        .login-btn:active {
+            background-color: #0096c7;
         }
 
-        .big-year {
-            font-size: 85px;
-            margin: 0;
-            color: #00ff00;
-            text-shadow: 2px 2px #ff0000, -2px -2px #0000ff;
-            animation: glitch 1s infinite;
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        #timer {
-            font-size: 45px;
+        #error {
+            color: #ff3838;
+            font-size: 13px;
+            margin-top: 10px;
             font-weight: bold;
-            text-shadow: 0 0 10px #00ff00;
-            margin: 20px 0;
         }
 
-        .wa-link {
-            display: inline-block;
-            margin-top: 20px;
-            font-size: 22px;
-            color: #00ff00;
-            text-decoration: none;
-            font-weight: bold;
-            border: 1px solid #00ff00;
-            padding: 10px 20px;
+        #page {
+            display: none; 
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: clamp(70px, 15vh, 95px) clamp(15px, 4vw, 20px) 40px clamp(15px, 4vw, 20px);
+        }
+
+        .interactive-boarder {
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .interactive-boarder::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #4CAF50, #00bff3, #ff3838, #4CAF50);
+            background-size: 100% 200%;
             border-radius: 10px;
-            transition: 0.3s;
+            box-shadow: 0 0 15px #00bff3;
+            animation: laserMove 4s linear infinite;
         }
 
-        .wa-link:hover {
-            background: #00ff00;
-            color: black;
-            box-shadow: 0 0 30px #00ff00;
+        .content h2 {
+            font-size: clamp(18px, 4.5vw, 22px);
+            font-weight: 300;
+        }
+
+        .content h1 {
+            font-size: clamp(28px, 7.5vw, 36px);
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(0, 191, 243, 0.8);
+        }
+
+        .tagline {
+            margin-top: 10px;
+            font-family: 'Noto Sans Telugu', sans-serif;
+            font-size: clamp(14px, 3.5vw, 16px);
+            color: #FFF8DC;
+            font-weight: 700;
+        }
+
+        .line {
+            width: min(200px, 60vw);
+            height: 4px;
+            background: linear-gradient(to right, #4CAF50, #00bff3, #ff3838, #4CAF50);
+            background-size: 200% 100%;
+            border-radius: 20px;
+            margin: 15px 0 25px 0;
+            animation: laserMoveHorizontal 4s linear infinite;
+        }
+
+        @keyframes laserMove {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 0% 200%; }
+        }
+
+        @keyframes laserMoveHorizontal {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        .links-container {
+            width: 100%;
+        }
+
+        .link-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            color: #e0e6ed;
+            font-weight: bold;
+        }
+
+        .styled-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: clamp(12px, 3.5vw, 14px);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-size: clamp(13px, 3.5vw, 14px);
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .red-link-box {
+            background: rgba(180, 20, 20, 0.35) !important;
+            border: 1px solid rgba(255, 56, 56, 0.6) !important;
+        }
+
+        .white-text { color: #ffffff !important; }
+        .red-text { color: #ff4d4d !important; }
+
+        .gift-box-wrapper { margin-top: 15px; }
+
+        .gift-box {
+            background: linear-gradient(135deg, rgba(211, 47, 47, 0.9), rgba(136, 14, 79, 0.95));
+            border: 1px solid rgba(255, 82, 82, 0.7);
+            border-radius: 14px;
+            padding: clamp(12px, 3.5vw, 14px);
+            cursor: pointer;
+        }
+
+        .box-lid {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: clamp(12px, 3.5vw, 14px);
+        }
+
+        .box-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.4s ease;
+        }
+
+        .gift-box.open .box-content {
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 12px;
+        }
+
+        .id-ribbon-card {
+            background: #ffffff;
+            color: #d32f2f;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: clamp(10px, 3vw, 11px);
+            font-weight: bold;
+            word-break: break-all;
+            border: 2px dashed #ff1744;
+            text-align: center;
+        }
+
+        .qr-card {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(0, 191, 243, 0.4);
+            border-radius: 16px;
+            padding: clamp(16px, 4vw, 22px) clamp(12px, 3.5vw, 16px);
+            text-align: center;
+            margin-top: 10px;
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-    <canvas id="matrix"></canvas>
+    <!-- Security Overlay -->
+    <div id="securityOverlay">
+        🔒 Security Protected<br><span style="font-size: 14px; color: #aaa; margin-top: 10px; display: block;">Screenshot & Inspection Disabled</span>
+    </div>
 
-    <div class="content-layer">
-        <div id="countdown-screen" class="glass-container">
-            <h1 style="font-size: 24px;">Hang tight jack  2026 is coming:</h1>
-            <div id="timer"></div>
-            <p>Target: Jan  1  2026 00:00:00</p>
-        </div>
+    <!-- Hidden Watermark Container -->
+    <div class="watermark-container" id="watermark"></div>
 
-        <div id="gift-container">
-            <div class="gift-box" onclick="openGift()">🎁</div>
-            <h2 style="color: gold;">A Gift for You! Tap to Open</h2>
-        </div>
+    <div class="clock-container">
+        <div id="liveClock" class="live-clock">00:00:00</div>
+        <div id="expiryTime" class="expiry-time">Exp: --:--:--</div>
+    </div>
 
-        <div id="main-content">
-            <div class="glass-container">
-                <h1 class="big-year">2026</h1>
-                <h2 style="font-size: 18px;">Walking into 2026 with the most precious people in my life.</h2>
-                <p>Happy New Year to everyone </p>
-                <br>
-                <p>Don't tap on my Name </p>
-                <a class="wa-link" href="https://wa.me/916302965804?text=Happy New Year Jack! 🎊">
-                    jack___Q <sub>x</sub> 😊
-                </a>
+    <div id="login" class="login-wrapper">
+        <div class="login-container">
+            <h2>🔒 Protected Page</h2>
+            <div class="input-group">
+                <input type="password" id="pass" placeholder="Enter Password">
+                <span class="toggle-eye" id="eyeIcon" onclick="togglePassword()">👁️</span>
             </div>
+            <button class="login-btn" onclick="login()">Unlock</button>
+            <p id="error"></p>
         </div>
+    </div>
 
-        <div id="smile-screen" class="glass-container">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-                <circle cx="35" cy="40" r="6" fill="#00ff00" />
-                <circle cx="65" cy="40" r="6" fill="#00ff00" />
-                <path d="M 30 65 Q 50 85 70 65" stroke="#00ff00" stroke-width="6" fill="none" />
-            </svg>
-            <h2>Time's Up!</h2>
-            <p>Hope you had a great start to 2026!</p>
+    <div id="page">
+        <canvas id="neuralCanvas"></canvas>
+
+        <div class="content">
+            <div class="interactive-boarder">
+                <h2>Happy Birthday</h2>
+                <h1>my Brother</h1>
+                <p class="tagline">use this referral links otherwise you can skip it</p>
+            </div>
+            
+            <div class="line"></div>
+
+            <div class="links-container">
+                <div class="link-section-title">📊 TRADING LINKS</div>
+                
+                <a href="https://zerodha.com/open-account?c=MOB157" target="_blank" class="styled-link red-link-box">
+                    <span>
+                        <span class="white-text">📈 Trading Platform - </span>
+                        <span class="red-text">Link 1</span>
+                    </span>
+                    <span class="white-text">➔</span>
+                </a>
+
+                <a href="https://account.binance.com/register?ref=1051895088&?registerChannel=user_center" target="_blank" class="styled-link red-link-box">
+                    <span>
+                        <span class="white-text">📉 Trading Analysis - </span>
+                        <span class="red-text">Link 2</span>
+                    </span>
+                    <span class="white-text">➔</span>
+                </a>
+
+                <div class="link-section-title" style="margin-top: 18px;">💬 PERSONAL CONTACT</div>
+                <a href="https://getsession.org/download" target="_blank" class="styled-link" style="background: rgba(0, 191, 243, 0.15); border-color: rgba(0, 191, 243, 0.4);">
+                    <span style="color: #00bff3;">🔐 Personal Chat Session application  link</span>
+                    <span style="color: #00bff3;">➔</span>
+                </a>
+
+                <div class="gift-box-wrapper">
+                    <div class="gift-box" id="giftBox" onclick="toggleGiftBox()">
+                        <div class="box-lid">
+                            <span id="lidText"> # </span>
+                            <span id="boxArrow">▼</span>
+                        </div>
+                        <div class="box-content">
+                            <div class="id-ribbon-card">
+                                <span style="display:block; color:#b71c1c; font-size:12px; margin-bottom:4px;">🧸 MY ID</span>
+                                05b118c1bacf5a1bcacf67a96386c4ff2d3d2879ebe03eedcff457d6766e34b553
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🎂 EXCLUSIVE BROTHER ACCESS 🎂 -->
+                <div class="link-section-title" style="margin-top: 22px;">🌐 Today is my younger brother birthday  so I’m giving away some free eBooks to everyon </div>
+                <div class="qr-card" style="border-color: rgba(255, 152, 0, 0.6); background: rgba(0, 0, 0, 0.75);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="color: #ff9800; font-weight: bold; font-size: 13px; text-transform: uppercase;">🎂 THIS IS FOR YOU MY BROTHER</span>
+                        <span id="brotherTimerText" style="background: rgba(255, 152, 0, 0.2); border: 1px solid rgba(255, 152, 0, 0.5); color: #ff9800; font-family: 'Courier New', monospace; padding: 4px 8px; border-radius: 4px; font-size: 11px;">Exp: --:--:--</span>
+                    </div>
+                    <p style="font-size: 12px; color: #ffd700; margin-bottom: 12px; font-weight: bold; text-align: left;">
+                        ⚠️ This link will only work in Tor Browser and only until the specified time limit.
+                    </p>
+                    <a id="brotherLinkBtn" href="http://6thpxi7uq2cje2vuj4o2qfl6sjaw2oc3otz23nglkvyvz4fsynngl6ad.onion/jYVPW1MKNb-Zz1ymkCR2Rw" target="_blank" style="display: block; padding: 12px; background: #ff9800; color: #000000; text-decoration: none; font-weight: bold; border-radius: 8px; font-size: 11px; word-break: break-all; box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-align: center;">
+                        http://6thpxi7uq2cje2vuj4o2qfl6sjaw2oc3otz23nglkvyvz4fsynngl6ad.onion/jYVPW1MKNb-Zz1ymkCR2Rw ➔
+                    </a>
+                </div>
+
+            </div>
         </div>
     </div>
 
     <script>
-        // --- Matrix Animation with Mouse/Touch Interaction ---
-        const canvas = document.getElementById("matrix");
-        const ctx = canvas.getContext("2d");
-        let mouseX = -1000, mouseY = -1000; // Screen off-set initially
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789HALLELUJAH".split("");
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.font = fontSize + "px monospace";
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                const x = i * fontSize;
-                const y = drops[i] * fontSize;
-
-                // Color change when near mouse/touch
-                const dist = Math.hypot(x - mouseX, y - mouseY);
-                ctx.fillStyle = dist < 120 ? "#ffffff" : "#00ff00";
-
-                ctx.fillText(text, x, y);
-                if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 35);
-
-        // Interaction Listeners
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
+        // --- ADVANCED SECURITY & ANTI-INSPECT GUARD ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
         
-        window.addEventListener('touchstart', (e) => {
-            mouseX = e.touches[0].clientX;
-            mouseY = e.touches[0].clientY;
+        document.addEventListener('keydown', function (e) {
+            if (
+                e.keyCode === 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
+                (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) ||
+                (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 74))
+            ) {
+                e.preventDefault();
+                return false;
+            }
         });
 
-        // --- Logic Control ---
-        function openGift() {
-            document.getElementById('gift-container').style.display = "none";
-            document.getElementById('main-content').style.display = "flex";
-            launchFireworks();
-            setInterval(launchFireworks, 3000);
-        }
+        // Anti-Debugger loop
+        setInterval(function() {
+            const before = new Date().getTime();
+            debugger;
+            const after = new Date().getTime();
+            if (after - before > 100) {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20vh;'>Access Blocked: Inspection Detected</h1>";
+            }
+        }, 1000);
 
-        function launchFireworks() {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#00ff00', '#ffffff', '#ffd700']
-            });
-        }
+        // Anti-Screenshot and Blur Protection
+        const overlay = document.getElementById('securityOverlay');
+        window.addEventListener('blur', () => { overlay.style.display = 'flex'; });
+        window.addEventListener('focus', () => { overlay.style.display = 'none'; });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) { overlay.style.display = 'flex'; } 
+            else { overlay.style.display = 'none'; }
+        });
 
-        function update() {
-            const targetDate = "2026-01-01T00:00:00"; 
-            const openTime = new Date(targetDate).getTime();
-            const expiryTime = new Date("2026-01-01T23:59:59").getTime();
-            const now = new Date().getTime();
+        document.addEventListener('copy', (e) => { e.preventDefault(); });
+        document.addEventListener('cut', (e) => { e.preventDefault(); });
 
-            const s1 = document.getElementById('countdown-screen');
-            const sGift = document.getElementById('gift-container');
-            const sMain = document.getElementById('main-content');
-            const sEnd = document.getElementById('smile-screen');
+        // --- CORE APPLICATION SCRIPTS ---
+        const PASSWORD = "Naruboyina@000";
+        const EXPIRY_TIME = "23:59:00"; 
 
-            if (now < openTime) {
-                const diff = openTime - now;
-                const d = Math.floor(diff / 86400000);
-                const h = Math.floor((diff % 86400000) / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-                document.getElementById('timer').innerHTML = `${d}d ${h}h ${m}m ${s}s`;
-                s1.style.display = "flex";
-            } else if (now <= expiryTime) {
-                s1.style.display = "none";
-                if (sMain.style.display !== "flex") {
-                    sGift.style.display = "flex";
+        function updateClockAndExpiry() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+
+            let fmtHours = hours < 10 ? '0' + hours : hours;
+            let fmtMinutes = minutes < 10 ? '0' + minutes : minutes;
+            let fmtSeconds = seconds < 10 ? '0' + seconds : seconds;
+
+            document.getElementById('liveClock').innerHTML = `${fmtHours}:${fmtMinutes}:${fmtSeconds}`;
+
+            const expiryElement = document.getElementById('expiryTime');
+            if (`${fmtHours}:${fmtMinutes}:${fmtSeconds}` >= EXPIRY_TIME) {
+                expiryElement.innerHTML = "Expired";
+            } else {
+                expiryElement.innerHTML = `Exp: ${EXPIRY_TIME}`;
+            }
+
+            const midnight = new Date(now);
+            midnight.setHours(23, 59, 59, 999);
+            const diff = midnight - now;
+
+            const brotherTimerText = document.getElementById('brotherTimerText');
+            const brotherLinkBtn = document.getElementById('brotherLinkBtn');
+
+            if (diff > 0) {
+                const bHours = Math.floor(diff / (1000 * 60 * 60));
+                const bMins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const bSecs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                const hStr = bHours < 10 ? '0' + bHours : bHours;
+                const mStr = bMins < 10 ? '0' + bMins : bMins;
+                const sStr = bSecs < 10 ? '0' + bSecs : bSecs;
+
+                if(brotherTimerText) {
+                    brotherTimerText.innerHTML = `Exp: ${hStr}:${mStr}:${sStr}`;
                 }
             } else {
-                sMain.style.display = "none";
-                sGift.style.display = "none";
-                sEnd.style.display = "flex";
+                if(brotherTimerText) {
+                    brotherTimerText.innerHTML = "Expired";
+                }
+                if(brotherLinkBtn) {
+                    brotherLinkBtn.innerHTML = "❌ Link Expired (Night 12:00 Reached)";
+                    brotherLinkBtn.style.pointerEvents = "none";
+                    brotherLinkBtn.style.opacity = "0.6";
+                    brotherLinkBtn.removeAttribute("href");
+                }
+            }
+        }
+        
+        setInterval(updateClockAndExpiry, 1000);
+        updateClockAndExpiry(); 
+
+        function login(){
+            let p = document.getElementById("pass").value;
+            if(p === PASSWORD) {
+                document.getElementById("login").style.display = "none";
+                document.getElementById("page").style.display = "block";
+                initNeuralBackground();
+            } else {
+                document.getElementById("error").innerHTML = "Wrong Password";
             }
         }
 
-        setInterval(update, 1000);
-        update();
-
-        window.addEventListener("resize", () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        document.getElementById("pass").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { login(); }
         });
+
+        function togglePassword(){
+            let input = document.getElementById("pass");
+            let eyeIcon = document.getElementById("eyeIcon");
+            if(input.type === "password"){
+                input.type = "text";
+                eyeIcon.innerHTML = "🔑 👁️";
+            } else {
+                input.type = "password";
+                eyeIcon.innerHTML = "👁️";
+            }
+        }
+
+        function toggleGiftBox() {
+            const box = document.getElementById('giftBox');
+            const lidText = document.getElementById('lidText');
+            const boxArrow = document.getElementById('boxArrow');
+
+            box.classList.toggle('open');
+            if (box.classList.contains('open')) {
+                lidText.innerHTML = "💖 “Send me a message here ”";
+                boxArrow.innerHTML = "▲";
+            } else {
+                lidText.innerHTML = " if you tap here my id appear  ";
+                boxArrow.innerHTML = "▼";
+            }
+        }
+
+        function initNeuralBackground() {
+            const canvas = document.getElementById('neuralCanvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const stars = [];
+            const numStars = 120;
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.02 + 0.005,
+                    increasing: Math.random() > 0.5
+                });
+            }
+
+            const nerves = [];
+            const isMobile = window.innerWidth < 768;
+            const centerX = canvas.width * (isMobile ? 0.75 : 0.7);
+            const centerY = canvas.height * 0.35; 
+
+            const spineNodes = [];
+            const spineLength = canvas.height * 0.5;
+            const steps = 12;
+            for (let i = 0; i <= steps; i++) {
+                spineNodes.push({ x: centerX, y: centerY + (i * (spineLength / steps)) });
+            }
+
+            spineNodes.forEach((sNode, idx) => {
+                if (idx > 2 && idx < steps - 1) {
+                    for (let b = 0; b < 3; b++) {
+                        const side = b % 2 === 0 ? 1 : -1;
+                        const length = (Math.random() * 60 + 30);
+                        const p1 = { x: sNode.x, y: sNode.y };
+                        const p2 = { x: sNode.x + (length * 0.4 * side), y: sNode.y + 15 };
+                        const p3 = { x: sNode.x + (length * side), y: p2.y + 20 };
+                        nerves.push([p1, p2, p3]);
+                    }
+                }
+            });
+
+            const dataPulses = [];
+            function spawnPulse() {
+                if (dataPulses.length > 40) return;
+                const colors = ['#ff5e5e', '#00bff3', '#da8cff', '#4caf50'];
+                const selectedColor = colors[Math.floor(Math.random() * colors.length)];
+
+                if (Math.random() > 0.4 && nerves.length > 0) {
+                    dataPulses.push({ path: nerves[Math.floor(Math.random() * nerves.length)], t: 0, speed: 0.01, color: selectedColor, size: 2 });
+                } else {
+                    dataPulses.push({ path: spineNodes, t: 0, speed: 0.008, color: selectedColor, size: 2.5 });
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                stars.forEach(star => {
+                    if (star.increasing) {
+                        star.alpha += star.speed;
+                        if (star.alpha >= 1) star.increasing = false;
+                    } else {
+                        star.alpha -= star.speed;
+                        if (star.alpha <= 0.2) star.increasing = true;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+                    ctx.shadowBlur = 6;
+                    ctx.shadowColor = '#ffffff';
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                });
+
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+
+                ctx.beginPath();
+                if(spineNodes.length > 0) {
+                    ctx.moveTo(spineNodes[0].x, spineNodes[0].y);
+                    for(let i=1; i<spineNodes.length; i++) ctx.lineTo(spineNodes[i].x, spineNodes[i].y);
+                }
+                ctx.stroke();
+
+                nerves.forEach(nerve => {
+                    ctx.beginPath();
+                    ctx.moveTo(nerve[0].x, nerve[0].y);
+                    for(let i=1; i<nerve.length; i++) ctx.lineTo(nerve[i].x, nerve[i].y);
+                    ctx.stroke();
+                });
+
+                if (Math.random() < 0.15) spawnPulse();
+
+                for (let i = dataPulses.length - 1; i >= 0; i--) {
+                    const p = dataPulses[i];
+                    p.t += p.speed;
+
+                    if (p.t >= 1) {
+                        dataPulses.splice(i, 1);
+                        continue;
+                    }
+
+                    const totalSegments = p.path.length - 1;
+                    const currentSegIndex = Math.floor(p.t * totalSegments);
+                    const segT = (p.t * totalSegments) - currentSegIndex;
+
+                    if (currentSegIndex >= 0 && currentSegIndex < totalSegments) {
+                        const pA = p.path[currentSegIndex];
+                        const pB = p.path[currentSegIndex + 1];
+
+                        const currentX = pA.x + (pB.x - pA.x) * segT;
+                        const currentY = pA.y + (pB.y - pA.y) * segT;
+
+                        ctx.beginPath();
+                        ctx.arc(currentX, currentY, p.size, 0, Math.PI * 2);
+                        ctx.fillStyle = p.color;
+                        ctx.fill();
+                    }
+                }
+
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
     </script>
 </body>
 </html>
